@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CODE CRAFT | Coding Studio</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="style.css">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'codegreen': '#00ff41',
+                        'codeblack': '#050505',
+                        'codecyan': '#00e5ff'
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+
+<body
+    class="min-h-screen flex flex-col items-center justify-center px-4 overflow-x-hidden bg-codeblack text-white selection:bg-codegreen selection:text-black">
+
+    <!-- Background Layers -->
+    <!-- Background Layers -->
+    <div class="fixed inset-0 z-0 pointer-events-none overflow-hidden bg-codeblack">
+        <!-- 1. Canvas for Particles -->
+        <canvas id="bgCanvas" class="absolute inset-0 z-0"></canvas>
+
+        <!-- 2. Hexagon Mesh Overlay -->
+        <div class="absolute inset-0 bg-hex-mesh opacity-20 z-10"></div>
+
+        <!-- 3. Vignette & Scanline -->
+        <div class="absolute inset-0 bg-[radial-gradient(circle_at_center,transparent_0%,#000000_150%)] z-20"></div>
+        <div class="absolute inset-0 scanline-overlay z-30 opacity-20"></div>
+
+        <!-- 4. Central Glow Pulse -->
+        <div
+            class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-codegreen/5 blur-[120px] rounded-full animate-pulse-slow z-0">
+        </div>
+    </div>
+
+    <!-- HUD Decoration -->
+    <div class="hud-corner hud-tl"></div>
+    <div class="hud-corner hud-tr"></div>
+    <div class="hud-corner hud-bl"></div>
+    <div class="hud-corner hud-br"></div>
+    <div class="fixed bottom-4 left-4 text-[10px] text-codegreen/50 font-mono z-40 hidden sm:block">
+        CAM_01 [REC]
+    </div>
+    <div class="fixed top-4 right-4 text-[10px] text-codegreen/50 font-mono z-40 hidden sm:block">
+        SYS_READY
+    </div>
+
+    <!-- Hero Content -->
+    <div id="hero" class="text-center z-20 relative flex flex-col items-center w-full max-w-6xl mx-auto">
+
+        <!-- "Coding Studio" - Creative Formatting -->
+        <div class="mb-12 relative">
+            <div class="flex items-center gap-4 text-xs md:text-sm font-mono tracking-[0.3em] text-gray-400 uppercase">
+                <span class="text-codegreen">&lt;</span>
+                <span class="relative group cursor-hover">
+                    <span class="group-hover:text-white transition-colors duration-300">Coding Studio</span>
+                    <span
+                        class="absolute -bottom-1 left-0 w-0 h-[1px] bg-codegreen group-hover:w-full transition-all duration-300"></span>
+                </span>
+                <span class="text-codegreen">/&gt;</span>
+            </div>
+        </div>
+
+        <!-- Main Title - Glitch & Huge -->
+        <div class="relative mb-8 text-center px-4">
+            <h1 class="font-syncopate font-bold tracking-tighter mix-blend-screen leading-none"
+                style="font-size: clamp(3rem, 13vw, 9rem);" data-text="CODECRAFT">
+                <span class="block md:inline glitch-text" data-text="CODE">CODE</span>
+                <span
+                    class="block md:inline glitch-text text-transparent bg-clip-text bg-gradient-to-b from-white to-gray-600"
+                    data-text="CRAFT">CRAFT</span>
+            </h1>
+        </div>
+
+        <!-- Subtext - Terminal Style -->
+        <div class="max-w-xl mx-auto mb-16 h-12">
+            <p class="text-gray-400 font-mono text-sm md:text-base">
+                <span class="text-codegreen mr-2">$</span><span id="typing-text"></span><span
+                    class="cursor-blink bg-codegreen w-2 h-4 inline-block align-middle ml-1"></span>
+            </p>
+        </div>
+
+        <!-- CTA Button - Cyberpunk Style -->
+        <button id="openBtn" onclick="openRegistrationModal()" style="position: relative; z-index: 50;"
+            class="group relative px-8 py-4 bg-transparent border border-white/20 hover:border-codegreen transition-colors duration-300 overflow-hidden">
+            <div
+                class="absolute inset-0 bg-codegreen/10 translate-y-full group-hover:translate-y-0 transition-transform duration-300 ease-out">
+            </div>
+            <div class="relative z-10 flex items-center gap-3 font-mono font-bold tracking-widest text-sm uppercase">
+                <span>Init_Sequence</span>
+                <i data-lucide="terminal" class="w-4 h-4 text-codegreen group-hover:rotate-90 transition-transform"></i>
+            </div>
+            <!-- Corner Accents -->
+            <div
+                class="absolute top-0 left-0 w-2 h-2 border-t-2 border-l-2 border-codegreen opacity-0 group-hover:opacity-100 transition-opacity">
+            </div>
+            <div
+                class="absolute bottom-0 right-0 w-2 h-2 border-b-2 border-r-2 border-codegreen opacity-0 group-hover:opacity-100 transition-opacity">
+            </div>
+        </button>
+
+    </div>
+
+    <!-- Modal Container -->
+    <div id="modal"
+        class="fixed inset-0 z-50 hidden items-center justify-center p-0 sm:p-4 pointer-events-none opacity-0">
+        <!-- Modal Content -->
+        <div id="modalContent"
+            class="relative flex h-full w-full max-w-7xl overflow-hidden bg-black sm:rounded-none shadow-[0_0_50px_rgba(0,0,0,0.8)] flex-col lg:flex-row pointer-events-auto border border-gray-800">
+
+            <button id="closeBtn"
+                class="absolute right-6 top-6 z-50 flex h-10 w-10 items-center justify-center border border-gray-700 bg-black/50 hover:bg-white/10 text-white transition-all hover:border-codegreen">
+                <i data-lucide="x" class="h-5 w-5"></i>
+            </button>
+
+            <!-- Left Panel - Info -->
+            <div
+                class="w-full lg:w-1/3 flex flex-col justify-center p-8 gap-6 text-white relative bg-black border-r border-gray-800 hidden lg:flex">
+                <div
+                    class="absolute inset-0 bg-[linear-gradient(rgba(0,255,65,0.03)_1px,transparent_1px),linear-gradient(90deg,rgba(0,255,65,0.03)_1px,transparent_1px)] bg-[size:20px_20px] opacity-20">
+                </div>
+
+                <div class="relative z-10 space-y-6">
+                    <div
+                        class="inline-block px-2 py-1 border border-codegreen/30 text-codegreen text-[10px] font-mono tracking-widest bg-codegreen/5">
+                        SYSTEM_STATUS: ONLINE
+                    </div>
+                    <h2
+                        class="text-2xl font-syncopate font-bold leading-tight text-transparent bg-clip-text bg-gradient-to-r from-gray-100 to-gray-500">
+                        EVENT_PROTOCOL
+                    </h2>
+
+                    <ul class="space-y-4 font-mono text-xs text-gray-400">
+                        <li class="flex items-start gap-3">
+                            <i data-lucide="calendar" class="w-4 h-4 text-codegreen mt-0.5"></i>
+                            <div>
+                                <strong class="text-gray-300 block mb-0.5">DATE</strong>
+                                <span>Feb 15, 2026</span>
+                            </div>
+                        </li>
+                        <li class="flex items-start gap-3">
+                            <i data-lucide="clock" class="w-4 h-4 text-codegreen mt-0.5"></i>
+                            <div>
+                                <strong class="text-gray-300 block mb-0.5">TIME</strong>
+                                <span>10:00 AM - 04:00 PM</span>
+                            </div>
+                        </li>
+                        <li class="flex items-start gap-3">
+                            <i data-lucide="map-pin" class="w-4 h-4 text-codegreen mt-0.5"></i>
+                            <div>
+                                <strong class="text-gray-300 block mb-0.5">SECTOR</strong>
+                                <span>Lab Block C, 3rd Floor</span>
+                            </div>
+                        </li>
+                    </ul>
+
+                    <div class="pt-4 border-t border-gray-800">
+                        <p class="text-[10px] text-gray-500 font-mono leading-relaxed">
+                            // ENSURE DATA INTEGRITY<br>
+                            // ALL FIELDS MANDATORY
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Panel - Form -->
+            <div class="flex-1 flex items-center justify-center p-4 sm:p-8 bg-black relative">
+                <div class="absolute inset-0 bg-codecyan/5 blur-[100px] pointer-events-none"></div>
+
+                <div class="w-full max-w-md relative z-10">
+                    <form id="registrationForm" class="space-y-4 font-mono text-sm">
+
+                        <!-- Name & Roll No -->
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <div class="group">
+                                <label
+                                    class="block text-sm text-white font-bold mb-1 tracking-wide group-focus-within:text-codegreen transition-colors">>>
+                                    Full Name</label>
+                                <input type="text" name="name" required
+                                    class="w-full bg-black border-b border-gray-600 py-2 text-white focus:outline-none focus:border-codegreen transition-colors rounded-none placeholder-gray-700 text-sm"
+                                    placeholder="Enter your full name">
+                            </div>
+                            <div class="group">
+                                <label
+                                    class="block text-sm text-white font-bold mb-1 tracking-wide group-focus-within:text-codegreen transition-colors">>>
+                                    Roll Number</label>
+                                <input type="text" name="roll_number" required
+                                    class="w-full bg-black border-b border-gray-600 py-2 text-white focus:outline-none focus:border-codegreen transition-colors rounded-none placeholder-gray-700 text-sm"
+                                    placeholder="Ex: 23P61A05XX">
+                            </div>
+                        </div>
+
+                        <!-- Details Grid -->
+                        <div class="grid grid-cols-3 gap-4">
+                            <div class="group">
+                                <label
+                                    class="block text-sm text-white font-bold mb-1 tracking-wide group-focus-within:text-codegreen transition-colors">>>
+                                    Year</label>
+                                <select name="year" required
+                                    class="w-full bg-black border-b border-gray-600 py-2 text-white focus:outline-none focus:border-codegreen transition-colors rounded-none appearance-none text-sm">
+                                    <option value="" disabled selected>Select</option>
+                                    <option value="II">II</option>
+                                    <option value="III">III</option>
+                                    <option value="IV">IV</option>
+                                </select>
+                            </div>
+                            <div class="group">
+                                <label
+                                    class="block text-sm text-white font-bold mb-1 tracking-wide group-focus-within:text-codegreen transition-colors">>>
+                                    Branch</label>
+                                <select name="branch" required
+                                    class="w-full bg-black border-b border-gray-600 py-2 text-white focus:outline-none focus:border-codegreen transition-colors rounded-none appearance-none text-sm">
+                                    <option value="" disabled selected>Select</option>
+                                    <option value="CSE">CSE</option>
+                                    <option value="CSM">CSM (AI&ML)</option>
+                                    <option value="CSD">CSD (Data Science)</option>
+                                    <option value="CS-CYBER">CS - Cyber Security</option>
+                                    <option value="CS-BS">CS - Business Systems</option>
+                                    <option value="IT">IT</option>
+                                    <option value="ECE">ECE</option>
+                                    <option value="EEE">EEE</option>
+                                    <option value="MECH">Mechanical</option>
+                                    <option value="CIVIL">Civil</option>
+                                </select>
+                            </div>
+                            <div class="group">
+                                <label
+                                    class="block text-sm text-white font-bold mb-1 tracking-wide group-focus-within:text-codegreen transition-colors">>>
+                                    Section</label>
+                                <select name="section" required
+                                    class="w-full bg-black border-b border-gray-600 py-2 text-white focus:outline-none focus:border-codegreen transition-colors rounded-none appearance-none text-sm">
+                                    <option value="" disabled selected>Select</option>
+                                    <option value="A">A</option>
+                                    <option value="B">B</option>
+                                    <option value="C">C</option>
+                                    <option value="D">D</option>
+                                    <option value="E">E</option>
+                                    <option value="F">F</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- Contact -->
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <div class="group">
+                                <label
+                                    class="block text-sm text-white font-bold mb-1 tracking-wide group-focus-within:text-codegreen transition-colors">>>
+                                    Email Address</label>
+                                <input type="email" name="email" required
+                                    class="w-full bg-black border-b border-gray-600 py-2 text-white focus:outline-none focus:border-codegreen transition-colors rounded-none placeholder-gray-700 text-sm"
+                                    placeholder="example@gmail.com">
+                            </div>
+                            <div class="group">
+                                <label
+                                    class="block text-sm text-white font-bold mb-1 tracking-wide group-focus-within:text-codegreen transition-colors">>>
+                                    Contact Number</label>
+                                <input type="tel" name="mobile" required
+                                    class="w-full bg-black border-b border-gray-600 py-2 text-white focus:outline-none focus:border-codegreen transition-colors rounded-none placeholder-gray-700 text-sm"
+                                    placeholder="10-digit mobile number">
+                            </div>
+                        </div>
+
+                        <!-- Payment -->
+                        <div class="group">
+                            <label
+                                class="block text-sm text-white font-bold mb-1 tracking-wide group-focus-within:text-codegreen transition-colors">>>
+                                Transaction ID</label>
+                            <input type="text" name="transaction_id" required
+                                class="w-full bg-black border-b border-gray-600 py-2 text-white focus:outline-none focus:border-codegreen transition-colors rounded-none placeholder-gray-700 text-sm"
+                                placeholder="UPI / Bank References ID">
+                        </div>
+
+                        <!-- Expectations -->
+                        <div class="group">
+                            <label
+                                class="block text-sm text-white font-bold mb-1 tracking-wide group-focus-within:text-codegreen transition-colors">>>
+                                Expectations from the Event</label>
+                            <textarea name="expectations"
+                                class="w-full bg-black border-b border-gray-600 py-2 text-white focus:outline-none focus:border-codegreen transition-colors rounded-none placeholder-gray-700 resize-none h-16 transition-all font-sans text-sm"
+                                placeholder="What do you hope to learn?"></textarea>
+                        </div>
+
+                        <button type="submit" id="submitBtn"
+                            class="w-full py-4 mt-6 bg-codegreen text-black font-bold tracking-widest hover:bg-white transition-colors uppercase border border-transparent hover:border-codegreen text-base">
+                            REGISTER NOW
+                        </button>
+                    </form>
+
+                    <div id="successMsg" class="hidden flex flex-col items-center justify-center py-10 w-full">
+                        <div id="matrix-success"
+                            class="font-mono text-4xl md:text-5xl text-center mb-6 h-16 flex items-center justify-center tracking-widest font-bold text-codegreen">
+                        </div>
+                        <p class="text-gray-500 text-sm font-mono opacity-0" id="success-subtext">>>
+                            DATA_ENCRYPTED_AND_STORED</p>
+                    </div>
+                    <p id="form-status" class="text-center text-xs text-red-500 mt-2 font-mono min-h-[1rem]"></p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js?v=6"></script>
+    <script>
+        lucide.createIcons();
+
+        // Typing Effect for Subtext
+        const textToType = "Define your legacy. Compile your future.";
+        const typingContainer = document.getElementById('typing-text');
+        let typeIndex = 0;
+
+        function typeWriter() {
+            if (typeIndex < textToType.length) {
+                typingContainer.innerHTML += textToType.charAt(typeIndex);
+                typeIndex++;
+                setTimeout(typeWriter, 50);
+            }
+        }
+
+        // Start typing after a slight delay
+        setTimeout(typeWriter, 1000);
+    </script>
+</body>
+
+</html>
