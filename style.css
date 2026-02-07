@@ -1,8 +1,6 @@
-@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;500;700&family=Syncopate:wght@400;700&family=JetBrains+Mono:wght@300;400;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;500;700&family=Syncopate:wght@400;700&family=JetBrains+Mono:wght@300;400;700&family=Press+Start+2P&family=VT323&display=swap');
 
 :root {
-    --neon-green: #00ff41;
-    --neon-cyan: #18ae05;
     --deep-black: #020202;
     --code-gray: #1e1e1e;
 }
@@ -10,6 +8,15 @@
 body {
     font-family: 'Space Grotesk', sans-serif;
     background-color: var(--deep-black);
+    color: #fff;
+}
+
+.font-press-start {
+    font-family: 'Press Start 2P', cursive;
+}
+
+.font-vt323 {
+    font-family: 'VT323', monospace;
 }
 
 .font-syncopate {
@@ -24,8 +31,8 @@ body {
 .bg-coding-grid {
     background-size: 50px 50px;
     background-image:
-        linear-gradient(to right, rgba(0, 255, 65, 0.05) 1px, transparent 1px),
-        linear-gradient(to bottom, rgba(0, 255, 65, 0.05) 1px, transparent 1px);
+        linear-gradient(to right, rgba(217, 70, 239, 0.05) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(14, 165, 233, 0.05) 1px, transparent 1px);
 
     /* 3D Perspective Effect */
     transform: perspective(500px) rotateX(60deg);
@@ -55,7 +62,7 @@ body {
     position: fixed;
     width: 20px;
     height: 20px;
-    border-color: rgba(0, 255, 65, 0.3);
+    border-color: rgba(236, 72, 153, 0.3);
     z-index: 40;
     pointer-events: none;
 }
@@ -105,17 +112,17 @@ body {
 }
 
 .glitch-text::before {
-    color: var(--neon-cyan);
+    color: #0ea5e9;
     z-index: -1;
-    text-shadow: 2px 0 var(--neon-cyan);
+    text-shadow: 2px 0 #d946ef;
     animation: glitch-anim-1 2.5s infinite linear alternate-reverse;
 }
 
 .glitch-text::after {
-    color: #04d308;
+    color: #ec4899;
     /* Magenta for contrast */
     z-index: -2;
-    text-shadow: -2px 0 #026125;
+    text-shadow: -2px 0 #a21caf;
     animation: glitch-anim-2 3s infinite linear alternate-reverse;
 }
 
@@ -219,5 +226,12 @@ body {
 }
 
 ::-webkit-scrollbar-thumb:hover {
-    background: var(--neon-green);
+    background: #d946ef;
+}
+
+/* Dropdown Options */
+select option {
+    background-color: #050505;
+    color: white;
+    padding: 12px;
 }
